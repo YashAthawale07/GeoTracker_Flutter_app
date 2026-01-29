@@ -140,7 +140,7 @@ class EmployeeHome extends StatelessWidget {
                   onTap: () {
                     showAboutDialog(
                       context: context,
-                      applicationName: "Attendance System",
+                      applicationName: "GeoTracker_By_Yash",
                       applicationVersion: "1.0.0",
                     );
                   },
