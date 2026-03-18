@@ -16,6 +16,13 @@ class EmployeeService {
     return Employee.fromJson(res as Map<String, dynamic>);
   }
 
+  // Get employee profile by empId
+  static Future<Employee> getEmployeeProfile(String empId) async {
+    final res =
+        await ApiHelper.get("${Constants.baseUrl}/employees/$empId/profile");
+    return Employee.fromJson(res as Map<String, dynamic>);
+  }
+
   // Get all employees
   static Future<List<Employee>> getAllEmployees() async {
     final response = await ApiHelper.get("${Constants.baseUrl}/employees");
@@ -32,10 +39,22 @@ class EmployeeService {
   }
 
   // Update employee by empId
-  static Future<Employee> updateEmployee(String empId, String name) async {
+  static Future<Employee> updateEmployee(Employee emp) async {
+    final uri = Uri.parse("${Constants.baseUrl}/employees/update").replace(
+      queryParameters: {
+        'empId': emp.empId,
+        'name': emp.name,
+        'email': emp.email,
+        'phone': emp.phone,
+        'department': emp.department,
+        'role': emp.role,
+        'post': emp.post,
+      },
+    );
+
     final response = await ApiHelper.put(
-      "${Constants.baseUrl}/employees/update?empId=$empId&name=$name",
-      body: {"name": name},
+      uri.toString(),
+      body: emp.toJson(),
     );
     // response is updated employee JSON
     return Employee.fromJson(response as Map<String, dynamic>);

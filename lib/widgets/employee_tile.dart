@@ -19,17 +19,24 @@ class EmployeeTile extends StatelessWidget {
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        title: Text(employee.name, style: TextStyle(fontWeight: FontWeight.w600)),
-        subtitle: Text("ID: ${employee.empId}"),
+        title: Text(
+          employee.name,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
+        subtitle: Text(
+          "ID: ${employee.empId}"
+          "${employee.department.isNotEmpty ? " • ${employee.department}" : ""}"
+          "${employee.post.isNotEmpty ? " • ${employee.post}" : ""}",
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit, color: Colors.blueAccent),
+              icon: const Icon(Icons.edit, color: Colors.blueAccent),
               onPressed: onEdit,
             ),
             IconButton(
-              icon: Icon(Icons.delete, color: Colors.redAccent),
+              icon: const Icon(Icons.delete, color: Colors.redAccent),
               onPressed: onDelete,
             ),
           ],

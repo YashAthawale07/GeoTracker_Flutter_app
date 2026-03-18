@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'mark_attendence_screen.dart';
 import '../core/session.dart';
 import 'login_screen.dart';
+import 'employee_profile_screen.dart';
+import '../services/employee_service.dart';
+import 'employee_attendance_history_screen.dart';
 
 class EmployeeHome extends StatelessWidget {
   const EmployeeHome({super.key});
@@ -48,24 +51,40 @@ class EmployeeHome extends StatelessWidget {
                       child: Icon(Icons.person, color: Colors.white, size: 30),
                     ),
                     const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Welcome",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Welcome",
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black54,
+                            ),
                           ),
-                        ),
-                        Text(
-                          empId,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                          FutureBuilder(
+                            future: empId == "Employee"
+                                ? null
+                                : EmployeeService.getEmployeeProfile(empId),
+                            builder: (context, snapshot) {
+                              final name = snapshot.data?.name;
+                              final display = (name != null && name.isNotEmpty)
+                                  ? name
+                                  : empId;
+
+                              return Text(
+                                display,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -112,9 +131,10 @@ class EmployeeHome extends StatelessWidget {
                   title: "Attendance History",
                   color: Colors.orange,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Attendance history coming soon"),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EmployeeAttendanceHistoryScreen(),
                       ),
                     );
                   },
@@ -125,9 +145,10 @@ class EmployeeHome extends StatelessWidget {
                   title: "My Profile",
                   color: Colors.blue,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("Profile page coming soon"),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const EmployeeProfileScreen(),
                       ),
                     );
                   },
@@ -141,7 +162,7 @@ class EmployeeHome extends StatelessWidget {
                     showAboutDialog(
                       context: context,
                       applicationName: "GeoTracker_By_Yash",
-                      applicationVersion: "1.0.0",
+                      applicationVersion: "1.2.0",
                     );
                   },
                 ),
@@ -183,7 +204,7 @@ class _DashboardCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CircleAvatar(
-              backgroundColor: color.withOpacity(0.15),
+              backgroundColor: color.withValues(alpha: 0.15),
               radius: 30,
               child: Icon(icon, color: color, size: 30),
             ),

@@ -15,6 +15,11 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
   final _formKey = GlobalKey<FormState>();
   final _empIdController = TextEditingController();
   final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _departmentController = TextEditingController();
+  final _postController = TextEditingController();
+  String _role = 'EMPLOYEE';
   bool loading = false;
 
   Future<void> addEmployee() async {
@@ -25,9 +30,15 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     final emp = Employee(
       empId: _empIdController.text.trim(),
       name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      phone: _phoneController.text.trim(),
+      department: _departmentController.text.trim(),
+      role: _role,
+      post: _postController.text.trim(),
     );
 
     final success = await EmployeeService.addEmployee(emp);
+    if (!mounted) return;
 
     setState(() => loading = false);
 
@@ -42,7 +53,23 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
     if (success) {
       _empIdController.clear();
       _nameController.clear();
+      _emailController.clear();
+      _phoneController.clear();
+      _departmentController.clear();
+      _postController.clear();
+      setState(() => _role = 'EMPLOYEE');
     }
+  }
+
+  @override
+  void dispose() {
+    _empIdController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _phoneController.dispose();
+    _departmentController.dispose();
+    _postController.dispose();
+    super.dispose();
   }
 
   @override
@@ -87,7 +114,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                 border: Border.all(color: const Color(0xFFE5E7EB)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withValues(alpha: 0.04),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   )
@@ -106,6 +133,51 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
                     TextFormField(
                       controller: _nameController,
                       decoration: _inputDecoration("Employee Name"),
+                      validator: Validators.validateNotEmpty,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: _inputDecoration("Email"),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: Validators.validateEmail,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _phoneController,
+                      decoration: _inputDecoration("Phone"),
+                      keyboardType: TextInputType.phone,
+                      validator: Validators.validatePhone,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _departmentController,
+                      decoration: _inputDecoration("Department"),
+                      validator: Validators.validateNotEmpty,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      initialValue: _role,
+                      decoration: _inputDecoration("Role"),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'EMPLOYEE',
+                          child: Text('EMPLOYEE'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'ADMIN',
+                          child: Text('ADMIN'),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val == null) return;
+                        setState(() => _role = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _postController,
+                      decoration: _inputDecoration("Post"),
                       validator: Validators.validateNotEmpty,
                     ),
                     const SizedBox(height: 24),

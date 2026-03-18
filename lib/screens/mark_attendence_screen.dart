@@ -15,6 +15,7 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
   bool loading = false;
   double? latitude;
   double? longitude;
+  double? accuracyMeters;
 
   @override
   void initState() {
@@ -24,6 +25,12 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
   // Request location permission
   Future<void> _requestLocationPermission() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showSnackBar("Location services are disabled. Please enable GPS.");
+      return;
+    }
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -57,6 +64,26 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
     });
 
     try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        _showSnackBar("Location services are disabled. Please enable GPS.");
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.deniedForever) {
+        _showSnackBar(
+            "Location permissions are permanently denied. Enable them from settings.");
+        return;
+      }
+      if (permission == LocationPermission.denied) {
+        _showSnackBar("Location permission denied.");
+        return;
+      }
+
       // ====== Option 1: Hardcoded lat/long ======
       // Uncomment these lines to use hardcoded coordinates
       // latitude = 21.0077;
@@ -64,11 +91,16 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
 
       // ====== Option 2: Use Geolocation ======
       // Comment the below if using hardcoded coordinates
+      final settings = const LocationSettings(
+        accuracy: LocationAccuracy.best,
+        timeLimit: Duration(seconds: 15),
+      );
       Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        locationSettings: settings,
       );
       latitude = position.latitude;
       longitude = position.longitude;
+      accuracyMeters = position.accuracy;
 
       // Call API
       final message =
@@ -135,9 +167,17 @@ class _MarkAttendanceScreenState extends State<MarkAttendanceScreen> {
               _buildInfoCard(
                   "Location",
                   latitude != null && longitude != null
-                      ? "Lat: ${latitude!.toStringAsFixed(4)}, Lon: ${longitude!.toStringAsFixed(4)}"
+                      ? "Lat: ${latitude!.toStringAsFixed(5)}, Lon: ${longitude!.toStringAsFixed(5)}"
                       : "Not fetched yet",
                   Icons.location_on),
+
+              _buildInfoCard(
+                "Accuracy",
+                accuracyMeters != null
+                    ? "${accuracyMeters!.toStringAsFixed(1)} meters"
+                    : "Not available",
+                Icons.gps_fixed,
+              ),
 
               const SizedBox(height: 20),
 

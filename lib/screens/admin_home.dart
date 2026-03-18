@@ -3,6 +3,8 @@ import '../core/session.dart';
 import 'login_screen.dart';
 import 'add_employee_screen.dart';
 import 'employee_list_screen.dart';
+import 'set_office_location_screen.dart';
+import 'admin_attendance_history_screen.dart';
 
 class AdminHome extends StatelessWidget {
   const AdminHome({super.key});
@@ -82,7 +84,41 @@ class AdminHome extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const EmployeeListScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const EmployeeListScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Card: Set Office Location
+            _AdminActionCard(
+              title: "Set Office Location",
+              subtitle: "Configure office geofence on map",
+              icon: Icons.location_on_outlined,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SetOfficeLocationScreen(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+
+            // Card: Attendance History
+            _AdminActionCard(
+              title: "Attendance History",
+              subtitle: "View employee attendance with filters",
+              icon: Icons.history,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminAttendanceHistoryScreen(),
+                  ),
                 );
               },
             ),
@@ -119,7 +155,7 @@ class _AdminActionCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFE5E7EB)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 4),
             )
